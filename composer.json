@@ -41,5 +41,7 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "license": "MIT",
+    "homepage": "https://github.com/moztopia/moztopia-access/wiki"
 }

@@ -6,7 +6,7 @@ Use `wip/{major}/{issue-number}-{slug}` branches; the current source major is 0.
 
 PHP 8.4.27 or 8.5.12 with Composer 2 and PDO SQLite can run the default tests. Dependencies are development-only except declared Illuminate components. Do not install dependencies on a workstation when its policy requires isolated containers. A Laravel application scaffold or server is unnecessary.
 
-Run `composer install`, `composer validate`, `composer test` and `composer lint`. Apply formatting with `vendor/bin/pint`. Preserve the blank line after PHPDoc blocks. The expected missing-license warning is not permission to select a license; strict Composer validation remains blocked until an authorized selection.
+Run `composer install`, `composer validate`, `composer test` and `composer lint`. Apply formatting with `vendor/bin/pint`. Preserve the blank line after PHPDoc blocks. The package uses the owner-approved MIT License; strict Composer validation is required.
 
 Use only disposable test databases: the suite drops and recreates all `moztopia_access_*` tables and `access_test_users`. Never point the suite at a consuming application's database. The default database is in-memory SQLite; concurrency tests create temporary SQLite files. They execute independent PHP processes through `proc_open`; do not use Pest parallel execution against one shared database.
 

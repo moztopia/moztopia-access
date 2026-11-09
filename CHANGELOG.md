@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.9.0 — Padlock (2026-11-09)
 
 - Introduce independent Laravel roles, permissions and teams with explicit global/team assignment semantics.
 - Add `revokeTeam` as the membership-removal counterpart, preserving the team and unrelated grants.
@@ -11,4 +11,4 @@
 - Enforce UUID relationships, membership-dependent grants, uniqueness and transactional mutations.
 - Add Pest integration and independent-process concurrency tests, publishable resources and Git-managed wiki documentation.
 
-No release or license has been authorized.
+Initial MIT-licensed public release.

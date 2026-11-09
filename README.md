@@ -13,16 +13,10 @@ This is a Composer library, with no UI, authentication, automatic routes, admini
 
 Targets Laravel 12/13 on PHP `~8.4.27 || ~8.5.12`. See [tested combinations and database requirements](https://github.com/moztopia/moztopia-access/wiki/Testing-and-Compatibility).
 
-No release or Packagist publication is authorized yet. For local evaluation, add this checkout as a Composer `path` repository in a separate test application's `composer.json`, then require its development branch:
-
-```json
-{
-    "repositories": [{"type": "path", "url": "../moztopia-access"}]
-}
-```
+Install the latest 0.9 release from Packagist:
 
 ```sh
-composer require 'moztopia/access:dev-wip/0/1-access-package-foundation'
+composer require moztopia/access:^0.9
 php artisan vendor:publish --tag=moztopia-access-config
 ```
 
@@ -122,6 +116,6 @@ composer test
 composer lint
 ```
 
-License selection and public distribution are pending owner authorization. See [licensing status](https://github.com/moztopia/moztopia-access/wiki/Operations-and-Upgrades#licensing). No release has been published.
+Released under the [MIT License](LICENSE). First release: **0.9.0 — Padlock**. [Sponsor this work](https://buymeacoffee.com/mozrin).
 
 Copyright © 2026 Moztopia.
