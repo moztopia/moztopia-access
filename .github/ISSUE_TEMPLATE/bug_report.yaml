@@ -1,0 +1,18 @@
+name: Bug report
+description: Report an observable Access defect without sensitive data.
+title: "bug: "
+labels: [bug, 'area:authorization']
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and observed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal synthetic reproduction
+      description: Include package, PHP, Laravel and database versions. Never include credentials or application data.
+    validations:
+      required: true

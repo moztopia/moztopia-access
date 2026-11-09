@@ -1,0 +1,26 @@
+title: "[Question]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ask integration and usage questions here. Please check the wiki first.
+        Do not share credentials, device tokens, private URLs or personal data.
+        Security vulnerabilities belong in the repository's private Security reporting channel.
+  - type: input
+    id: version
+    attributes:
+      label: Package and Laravel/PHP versions
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: What are you trying to do?
+      description: Include the expected behavior and the documentation or approaches you have already tried.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Minimal sanitized example
+      description: Optional relevant code, queue/database details and safe error codes. Use dummy data.

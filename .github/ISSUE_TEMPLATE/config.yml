@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and integration help
+    url: https://github.com/moztopia/moztopia-access/discussions/categories/q-a
+    about: Ask installation, Laravel, Flutter and usage questions in Discussions.
+  - name: Propose an idea
+    url: https://github.com/moztopia/moztopia-access/discussions/categories/ideas
+    about: Discuss substantial changes before opening an implementation issue.
+  - name: Report a security vulnerability privately
+    url: https://github.com/moztopia/moztopia-access/security/advisories/new
+    about: Keep vulnerabilities, credentials and private user information out of public issues.
+  - name: Read the implementation guide
+    url: https://github.com/moztopia/moztopia-access/wiki
+    about: Installation, APIs, operations, Flutter integration and smoke tests.
