@@ -1,0 +1,16 @@
+title: "[Idea]: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What integration problem should this solve?
+      description: Describe the users affected and the current workaround without private product details.
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Proposed approach and alternatives
+      description: Explain how the idea fits this Laravel FCM/APNs package and preserves its lifecycle invariants.
+    validations:
+      required: true
