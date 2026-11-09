@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/assets/moztopia-access.png" width="300" alt="Moztopia Access — Padlock"></p>
+
 # Moztopia Access
 
 Explicit global and team-scoped roles and permissions for Laravel. Composer package `moztopia/access`, namespace `Moztopia\Access`. Built independently with native Laravel facilities; no Spatie dependency or implementation.
@@ -116,6 +118,6 @@ composer test
 composer lint
 ```
 
-Released under the [MIT License](LICENSE). First release: **0.9.0 — Padlock**. [Sponsor this work](https://buymeacoffee.com/mozrin).
+Released under the [MIT License](LICENSE). Current release: **0.9.1 — Padlock**. [Sponsor this work](https://buymeacoffee.com/mozrin).
 
 Copyright © 2026 Moztopia.
