@@ -1,0 +1,16 @@
+name: Feature request
+description: Propose a bounded consumer-facing improvement.
+labels: [enhancement, 'area:package']
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Consumer problem and proposed PHP usage
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Scope, acceptance and alternatives
+    validations:
+      required: true

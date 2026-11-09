@@ -1,0 +1,45 @@
+{
+    "name": "moztopia/access",
+    "description": "Explicit global and team-scoped roles and permissions for Laravel.",
+    "type": "library",
+    "require": {
+        "illuminate/contracts": "^12.0 || ^13.0",
+        "illuminate/database": "^12.0 || ^13.0",
+        "illuminate/support": "^12.0 || ^13.0",
+        "php": "~8.4.27 || ~8.5.12"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.25",
+        "orchestra/testbench": "^10.0 || ^11.0",
+        "pestphp/pest": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moztopia\\Access\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moztopia\\Access\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moztopia\\Access\\AccessServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "lint": "pint --test"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
