@@ -147,15 +147,6 @@ final class AccessService
     }
 
     /**
-     * Alias assignRole for the original service contract.
-     */
-
-    public function grantRole(Model $user, string $name, AccessTeam|string|null $team = null): void
-    {
-        $this->assignRole($user, $name, $team);
-    }
-
-    /**
      * Revoke only this role assignment; unknown roles are errors.
      */
 
@@ -171,15 +162,6 @@ final class AccessService
     public function assignPermission(Model $user, string $name, AccessTeam|string|null $team = null): void
     {
         $this->assign('permission', $user, $name, $team, true);
-    }
-
-    /**
-     * Alias assignPermission for the original service contract.
-     */
-
-    public function grantPermission(Model $user, string $name, AccessTeam|string|null $team = null): void
-    {
-        $this->assignPermission($user, $name, $team);
     }
 
     /**

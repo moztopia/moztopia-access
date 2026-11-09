@@ -6,7 +6,7 @@ namespace Moztopia\Access\Tests;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Foundation\Auth\User;
-use Moztopia\Access\HasAccess;
+use Moztopia\Access\Traits\HasAccess;
 
 /**
  * Model a host-owned UUID authenticatable.

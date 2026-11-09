@@ -44,7 +44,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Moztopia\Access\HasAccess;
+use Moztopia\Access\Traits\HasAccess;
 
 class User extends Authenticatable
 {
@@ -86,14 +86,9 @@ $user->hasTeam($team); // true
 $user->teams()->paginate(25);
 ```
 
-## Preferred commands and aliases
+## Assignment and revocation commands
 
-Prefer `assignRole()`, `assignPermission()` and `assignTeam()`. Supported aliases help you use familiar wording and transition code:
-
-- `grantRole()` delegates to `assignRole()`.
-- `grantPermission()`, `givePermission()` and `allow()` delegate to `assignPermission()`.
-
-All spellings have identical scope, validation, integrity and return behavior. `allow()` mutates a direct grant; `hasPermission()` checks access. Aliases are supported, not deprecated. See the [naming decision](https://github.com/moztopia/moztopia-access/wiki/API-Naming).
+Use `assignRole()`, `assignPermission()` and `assignTeam()`, paired with `revokeRole()`, `revokePermission()` and `revokeTeam()`. Permission checks use `hasPermission()`; role and membership checks use `hasRole()` and `hasTeam()`. There are no alternate mutation spellings or compatibility bridges. See the [naming decision](https://github.com/moztopia/moztopia-access/wiki/API-Naming).
 
 Teams accept an existing model or a unique application-defined name:
 
@@ -101,6 +96,7 @@ Teams accept an existing model or a unique application-defined name:
 $user->assignTeam('editorial'); // Membership only; the team must already exist.
 $user->assignRole('editor', team: 'editorial');
 $user->hasPermission('documents.edit', team: 'editorial');
+$user->revokeTeam('editorial'); // Removes membership and its scoped grants; keeps the team.
 ```
 
 Team lookup names stay stable when their separate display labels change. No team name is built in.

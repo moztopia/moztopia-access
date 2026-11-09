@@ -28,13 +28,13 @@ beforeEach(function (): void {
 
 it('checks global roles and direct and inherited permissions independently', function (): void {
     expect($this->user->hasRole('editor'))->toBeFalse();
-    $this->user->grantRole('editor');
+    $this->user->assignRole('editor');
     expect($this->user->hasRole('editor'))->toBeTrue()
         ->and($this->user->hasPermission('documents.edit'))->toBeTrue()
         ->and($this->other->hasPermission('documents.edit'))->toBeFalse();
     $this->user->revokePermission('documents.edit');
     expect($this->user->hasPermission('documents.edit'))->toBeTrue();
-    $this->user->grantPermission('documents.edit');
+    $this->user->assignPermission('documents.edit');
     $this->user->revokeRole('editor');
     expect($this->user->hasPermission('documents.edit'))->toBeTrue()
         ->and($this->user->hasRole('editor'))->toBeFalse();
@@ -43,21 +43,21 @@ it('checks global roles and direct and inherited permissions independently', fun
 });
 
 it('does not infer roles from equivalent direct permissions or special admin names', function (): void {
-    $this->user->grantPermission('documents.edit');
-    $this->user->grantRole('admin');
+    $this->user->assignPermission('documents.edit');
+    $this->user->assignRole('admin');
     expect($this->user->hasRole('editor'))->toBeFalse()
         ->and($this->user->hasPermission('documents.read'))->toBeFalse()
         ->and($this->user->hasPermission('undefined'))->toBeFalse();
 });
 
 it('applies exact team scope and requires membership even for global access', function (): void {
-    $this->user->grantRole('admin');
-    $this->user->grantPermission('documents.read');
+    $this->user->assignRole('admin');
+    $this->user->assignPermission('documents.read');
     expect($this->user->hasRole('admin', team: $this->a))->toBeFalse()
         ->and($this->user->hasPermission('documents.read', team: $this->a))->toBeFalse();
     $this->access->addMember($this->a, $this->user);
     $this->access->addMember($this->b, $this->user);
-    $this->user->grantRole('editor', team: $this->a);
+    $this->user->assignRole('editor', team: $this->a);
     expect($this->user->hasRole('editor'))->toBeFalse()
         ->and($this->user->hasRole('editor', team: $this->a))->toBeTrue()
         ->and($this->user->hasRole('editor', team: $this->b))->toBeFalse()
@@ -69,7 +69,7 @@ it('applies exact team scope and requires membership even for global access', fu
 });
 
 it('inherits global role permissions only for active members', function (): void {
-    $this->user->grantRole('editor');
+    $this->user->assignRole('editor');
     expect($this->user->hasPermission('documents.edit', team: $this->a))->toBeFalse();
     $this->access->addMember($this->a, $this->user);
     expect($this->user->hasPermission('documents.edit', team: $this->a))->toBeTrue();
@@ -78,26 +78,26 @@ it('inherits global role permissions only for active members', function (): void
 it('isolates direct team grants and scope-specific revocations', function (): void {
     $this->access->addMember($this->a, $this->user);
     $this->access->addMember($this->b, $this->user);
-    $this->user->grantPermission('documents.edit', team: $this->a);
+    $this->user->assignPermission('documents.edit', team: $this->a);
     $this->user->revokePermission('documents.edit');
     expect($this->user->hasPermission('documents.edit', team: $this->a))->toBeTrue()
         ->and($this->user->hasPermission('documents.edit'))->toBeFalse()
         ->and($this->user->hasPermission('documents.edit', team: $this->b))->toBeFalse();
-    $this->user->grantPermission('documents.edit');
+    $this->user->assignPermission('documents.edit');
     $this->user->revokePermission('documents.edit', team: $this->a);
     expect($this->user->hasPermission('documents.edit', team: $this->a))->toBeTrue();
 });
 
 it('requires active membership on team grants', function (string $method): void {
-    $name = $method === 'grantRole' ? 'editor' : 'documents.edit';
+    $name = $method === 'assignRole' ? 'editor' : 'documents.edit';
     expect(fn () => $this->user->{$method}($name, team: $this->a))->toThrow(DomainException::class, 'membership');
-})->with(['grantRole', 'grantPermission']);
+})->with(['assignRole', 'assignPermission']);
 
 it('removes scoped grants permanently and does not restore them on rejoining', function (): void {
     $this->access->addMember($this->a, $this->user);
-    $this->user->grantRole('editor', team: $this->a);
-    $this->user->grantPermission('documents.read', team: $this->a);
-    $this->user->grantRole('admin');
+    $this->user->assignRole('editor', team: $this->a);
+    $this->user->assignPermission('documents.read', team: $this->a);
+    $this->user->assignRole('admin');
     $this->access->removeMember($this->a, $this->user);
     $this->access->removeMember($this->a, $this->user);
     expect($this->user->hasTeam($this->a))->toBeFalse()
@@ -123,8 +123,8 @@ it('makes repeated grants and absent revocations safe in each scope', function (
         $this->access->addMember($team, $this->user);
     }
     foreach (range(1, 3) as $attempt) {
-        $this->user->grantRole('editor', team: $team);
-        $this->user->grantPermission('documents.edit', team: $team);
+        $this->user->assignRole('editor', team: $team);
+        $this->user->assignPermission('documents.edit', team: $team);
     }
     expect(DB::table('moztopia_access_role_assignments')->count())->toBe(1)
         ->and(DB::table('moztopia_access_permission_assignments')->count())->toBe(1);
@@ -136,7 +136,7 @@ it('makes repeated grants and absent revocations safe in each scope', function (
 })->with([null, 'team']);
 
 it('fails clearly on unknown mutations and fails closed on checks', function (): void {
-    foreach (['grantRole', 'revokeRole', 'grantPermission', 'revokePermission'] as $method) {
+    foreach (['assignRole', 'revokeRole', 'assignPermission', 'revokePermission'] as $method) {
         expect(fn () => $this->user->{$method}('unknown'))->toThrow(DomainException::class, 'Unknown');
     }
     expect($this->user->hasRole('unknown'))->toBeFalse()
@@ -145,7 +145,7 @@ it('fails clearly on unknown mutations and fails closed on checks', function ():
 });
 
 it('updates role permission sets atomically and refreshes checks on reused objects', function (): void {
-    $this->user->grantRole('editor');
+    $this->user->assignRole('editor');
     $service = $this->access;
     expect($this->user->hasPermission('documents.edit'))->toBeTrue();
     $service->setRolePermissions('editor', ['documents.read', 'documents.read']);
@@ -159,9 +159,9 @@ it('updates role permission sets atomically and refreshes checks on reused objec
 });
 
 it('inspects ordered deduplicated effective permissions and assigned roles', function (): void {
-    $this->user->grantRole('editor');
-    $this->user->grantPermission('documents.edit');
-    $this->user->grantPermission('documents.read');
+    $this->user->assignRole('editor');
+    $this->user->assignPermission('documents.edit');
+    $this->user->assignPermission('documents.read');
     expect($this->access->roles($this->user)->pluck('name')->all())->toBe(['editor'])
         ->and($this->access->effectivePermissions($this->user)->pluck('name')->all())->toBe(['documents.edit', 'documents.read'])
         ->and($this->access->effectivePermissions($this->user, $this->a))->toBeEmpty();
@@ -204,9 +204,9 @@ it('rejects nonexistent users and forged generated scope identities at the datab
 
 it('cleans dependent grants on permission role team and user deletion', function (): void {
     $this->access->addMember($this->a, $this->user);
-    $this->user->grantRole('editor');
-    $this->user->grantRole('editor', team: $this->a);
-    $this->user->grantPermission('documents.read', team: $this->a);
+    $this->user->assignRole('editor');
+    $this->user->assignRole('editor', team: $this->a);
+    $this->user->assignPermission('documents.read', team: $this->a);
     $this->access->deletePermission('documents.edit');
     expect($this->user->hasPermission('documents.edit'))->toBeFalse()
         ->and(DB::table('moztopia_access_role_permissions')->count())->toBe(0);
@@ -215,8 +215,8 @@ it('cleans dependent grants on permission role team and user deletion', function
     $this->access->deleteTeam($this->a);
     expect(DB::table('moztopia_access_memberships')->count())->toBe(0)
         ->and(DB::table('moztopia_access_permission_assignments')->count())->toBe(0);
-    $this->user->grantRole('admin');
-    $this->user->grantPermission('documents.read');
+    $this->user->assignRole('admin');
+    $this->user->assignPermission('documents.read');
     $this->user->delete();
     expect(DB::table('moztopia_access_role_assignments')->count())->toBe(0)
         ->and(DB::table('moztopia_access_permission_assignments')->count())->toBe(0);
@@ -224,8 +224,8 @@ it('cleans dependent grants on permission role team and user deletion', function
 
 it('keeps global grants when a team is deleted and direct grants when a role is deleted', function (): void {
     $this->access->addMember($this->a, $this->user);
-    $this->user->grantRole('editor', team: $this->a);
-    $this->user->grantPermission('documents.edit');
+    $this->user->assignRole('editor', team: $this->a);
+    $this->user->assignPermission('documents.edit');
     $this->access->deleteRole('editor');
     $this->access->deleteTeam($this->a);
     expect($this->user->hasPermission('documents.edit'))->toBeTrue()
@@ -246,13 +246,13 @@ it('fails closed on unsaved users and teams and rejects invalid mutation targets
     expect($user->hasPermission('documents.edit'))->toBeFalse()
         ->and($user->hasRole('editor'))->toBeFalse()
         ->and($this->user->hasTeam(new AccessTeam()))->toBeFalse();
-    expect(fn () => $user->grantRole('editor'))->toThrow(InvalidArgumentException::class);
+    expect(fn () => $user->assignRole('editor'))->toThrow(InvalidArgumentException::class);
     expect(fn () => $this->access->addMember(new AccessTeam(), $this->user))->toThrow(InvalidArgumentException::class);
 });
 
 it('retains no user team or request state in a reused service', function (): void {
     $this->access->addMember($this->a, $this->user);
-    $this->user->grantPermission('documents.edit', team: $this->a);
+    $this->user->assignPermission('documents.edit', team: $this->a);
     foreach (range(1, 3) as $iteration) {
         expect($this->access->hasPermission($this->user, 'documents.edit', $this->a))->toBeTrue()
             ->and($this->access->hasPermission($this->other, 'documents.edit', $this->a))->toBeFalse()
@@ -266,8 +266,8 @@ it('retains no user team or request state in a reused service', function (): voi
 it('preserves host Gate policy precedence and explicit team context', function (): void {
     Gate::define('documents.edit', fn (AccessTestUser $actor, AccessTeam $team): bool => $actor->hasPermission('documents.edit', team: $team));
     $this->access->addMember($this->a, $this->user);
-    $this->user->grantRole('editor', team: $this->a);
-    $this->user->grantRole('admin');
+    $this->user->assignRole('editor', team: $this->a);
+    $this->user->assignRole('admin');
     Gate::define('host.denied', fn (): bool => false);
     expect(Gate::forUser($this->user)->allows('documents.edit', $this->a))->toBeTrue()
         ->and(Gate::forUser($this->user)->allows('documents.edit', $this->b))->toBeFalse()
@@ -307,8 +307,8 @@ it('keeps generated scope keys stable with MariaDB character padding modes', fun
     try {
         DB::statement("SET SESSION sql_mode = 'STRICT_TRANS_TABLES,PAD_CHAR_TO_FULL_LENGTH'");
         $this->access->addMember($this->a, $this->user);
-        $this->user->grantRole('editor', team: $this->a);
-        $this->user->grantRole('editor');
+        $this->user->assignRole('editor', team: $this->a);
+        $this->user->assignRole('editor');
         expect(DB::table('moztopia_access_role_assignments')->whereNotNull('team_id')->value('scope_key'))->toBe($this->a->id)
             ->and(DB::table('moztopia_access_role_assignments')->whereNull('team_id')->value('scope_key'))->toBe('00000000-0000-0000-0000-000000000000');
     } finally {
@@ -323,12 +323,12 @@ it('authorizes the HTTP actor independently of a privileged mutation target', fu
     $this->access->definePermission('access.manage');
     $this->access->addMember($this->a, $this->user);
     $this->access->addMember($this->a, $this->other);
-    $this->user->grantRole('admin');
-    $this->user->grantPermission('access.manage', team: $this->a);
+    $this->user->assignRole('admin');
+    $this->user->assignPermission('access.manage', team: $this->a);
     $url = '/test/teams/'.$this->a->id.'/editors/'.$this->user->id;
     $this->actingAs($this->other)->postJson($url)->assertForbidden();
     expect($this->user->hasRole('editor', team: $this->a))->toBeFalse();
-    $this->other->grantPermission('access.manage', team: $this->a);
+    $this->other->assignPermission('access.manage', team: $this->a);
     $this->actingAs($this->other)->postJson($url)->assertNoContent();
     expect($this->user->hasRole('editor', team: $this->a))->toBeTrue();
     $this->access->removeMember($this->a, $this->other);
@@ -341,30 +341,30 @@ it('rolls back a new role when its permission set contains an unknown ability', 
 });
 
 it('rejects cross-connection identities without granting or exposing access', function (): void {
-    $this->user->grantRole('editor');
+    $this->user->assignRole('editor');
     $foreign = clone $this->user;
     config(['database.connections.foreign' => config('database.connections.testing')]);
     $foreign->setConnection('foreign');
     expect($foreign->hasRole('editor'))->toBeFalse()
         ->and($foreign->hasPermission('documents.edit'))->toBeFalse();
-    expect(fn () => $foreign->grantRole('admin'))->toThrow(InvalidArgumentException::class);
+    expect(fn () => $foreign->assignRole('admin'))->toThrow(InvalidArgumentException::class);
 });
 
 it('removes direct global and team grants when their permission definition is deleted', function (): void {
     $this->access->addMember($this->a, $this->user);
-    $this->user->grantPermission('documents.edit');
-    $this->user->grantPermission('documents.edit', team: $this->a);
+    $this->user->assignPermission('documents.edit');
+    $this->user->assignPermission('documents.edit', team: $this->a);
     $this->access->deletePermission('documents.edit');
     expect(DB::table('moztopia_access_permission_assignments')->count())->toBe(0)
         ->and($this->user->hasPermission('documents.edit'))->toBeFalse();
 });
 
 it('treats definition names as exact lowercase names on every engine', function (): void {
-    $this->user->grantRole('editor');
+    $this->user->assignRole('editor');
     expect($this->user->hasRole('Editor'))->toBeFalse()
         ->and($this->user->hasPermission('Documents.Edit'))->toBeFalse();
-    expect(fn () => $this->user->grantRole('Editor'))->toThrow(InvalidArgumentException::class);
-    expect(fn () => $this->user->grantPermission('Documents.Edit'))->toThrow(InvalidArgumentException::class);
+    expect(fn () => $this->user->assignRole('Editor'))->toThrow(InvalidArgumentException::class);
+    expect(fn () => $this->user->assignPermission('Documents.Edit'))->toThrow(InvalidArgumentException::class);
 });
 
 it('publishes installable configuration and migrations through native Artisan tags', function (): void {

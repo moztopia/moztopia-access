@@ -22,4 +22,4 @@ Use the ignored local `wiki/` Git clone for wiki changes. Discover its actual de
 
 Keep secrets, private infrastructure and proprietary application details out of commits. Do not add releases, tags, package publication or deployment automation without following the owner's controls. The owner chooses the license. See [security reporting](.github/SECURITY.md) for vulnerabilities.
 
-Use `assignRole()`, `assignPermission()` and `assignTeam()` as the preferred commands in new examples. Keep documented aliases semantically identical and supported. Follow the [local API naming decision](https://github.com/moztopia/moztopia-access/wiki/API-Naming); do not promote illustrative team names into package conventions.
+Use `assignRole()`, `assignPermission()` and `assignTeam()` as the preferred commands in new examples. Pair these with `revokeRole()`, `revokePermission()` and `revokeTeam()`; do not add mutation aliases or migration bridges. Package traits must live in `src/Traits/` with the matching namespace. Follow the [local API naming decision](https://github.com/moztopia/moztopia-access/wiki/API-Naming); do not promote illustrative team names into package conventions.

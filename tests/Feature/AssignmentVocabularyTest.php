@@ -18,7 +18,7 @@ beforeEach(function (): void {
     $this->access->defineRole('editor', ['documents.edit']);
 });
 
-it('keeps every permission spelling equivalent across global object and named scopes', function (string $method, string $scope): void {
+it('assigns and revokes direct permissions across global object and named scopes', function (string $scope): void {
     $team = match ($scope) {
         'global' => null,
         'object' => $this->team,
@@ -27,7 +27,7 @@ it('keeps every permission spelling equivalent across global object and named sc
     if ($team !== null) {
         $this->user->assignTeam($team);
     }
-    $this->user->{$method}('documents.edit', team: $team);
+    $this->user->assignPermission('documents.edit', team: $team);
     $this->user->assignPermission('documents.edit', team: $team);
     expect(DB::table('moztopia_access_permission_assignments')->count())->toBe(1)
         ->and($this->user->hasPermission('documents.edit', team: $team))->toBeTrue()
@@ -35,9 +35,9 @@ it('keeps every permission spelling equivalent across global object and named sc
         ->and($this->user->hasPermission('documents.edit', team: 'support'))->toBeFalse();
     $this->user->revokePermission('documents.edit', team: $team);
     expect($this->user->hasPermission('documents.edit', team: $team))->toBeFalse();
-})->with(['assignPermission', 'grantPermission', 'givePermission', 'allow'])->with(['global', 'object', 'name']);
+})->with(['global', 'object', 'name']);
 
-it('keeps role assignment spellings equivalent for names and objects', function (string $method, string $scope): void {
+it('assigns and revokes roles across global object and named scopes', function (string $scope): void {
     $team = match ($scope) {
         'global' => null,
         'object' => $this->team,
@@ -46,25 +46,24 @@ it('keeps role assignment spellings equivalent for names and objects', function 
     if ($team !== null) {
         $this->user->assignTeam($team);
     }
-    $this->user->{$method}('editor', team: $team);
+    $this->user->assignRole('editor', team: $team);
     $this->user->assignRole('editor', team: $team);
     expect(DB::table('moztopia_access_role_assignments')->count())->toBe(1)
         ->and($this->user->hasRole('editor', team: $team))->toBeTrue()
         ->and($this->user->hasPermission('documents.edit', team: $team))->toBeTrue();
     $this->user->revokeRole('editor', team: $team);
     expect($this->user->hasPermission('documents.edit', team: $team))->toBeFalse();
-})->with(['assignRole', 'grantRole'])->with(['global', 'object', 'name']);
+})->with(['global', 'object', 'name']);
 
-it('enforces identical membership and unknown-definition rules for all spellings', function (string $method, string $name): void {
+it('enforces membership and unknown-definition rules for assignment commands', function (string $method, string $name): void {
     expect(fn () => $this->user->{$method}($name, team: 'engineering'))->toThrow(DomainException::class, 'membership');
     $this->user->assignTeam('engineering');
     expect(fn () => $this->user->{$method}('missing', team: 'engineering'))->toThrow(DomainException::class, 'Unknown');
     expect(DB::table('moztopia_access_role_assignments')->count())->toBe(0)
         ->and(DB::table('moztopia_access_permission_assignments')->count())->toBe(0);
 })->with([
-    ['assignRole', 'editor'], ['grantRole', 'editor'],
-    ['assignPermission', 'documents.edit'], ['grantPermission', 'documents.edit'],
-    ['givePermission', 'documents.edit'], ['allow', 'documents.edit'],
+    ['assignRole', 'editor'],
+    ['assignPermission', 'documents.edit'],
 ]);
 
 it('assigns named membership only and retains UUID identity across label updates', function (): void {
@@ -107,4 +106,38 @@ it('removes named membership and grants permanently without affecting other scop
 it('enforces unique stable team names at the database boundary', function (): void {
     expect(fn () => $this->access->createTeam('engineering', displayName: 'Another label'))->toThrow(QueryException::class);
     expect($this->access->createTeam('different-name', displayName: 'Engineering')->name)->toBe('different-name');
+});
+
+it('revokes membership through the preferred command without deleting teams or unrelated grants', function (string $scope): void {
+    $team = $scope === 'name' ? 'engineering' : $this->team;
+    $this->user->assignTeam($team);
+    $this->user->assignTeam($this->otherTeam);
+    $this->user->assignRole('editor', team: $team);
+    $this->user->assignPermission('documents.edit', team: $team);
+    $this->user->assignRole('editor', team: $this->otherTeam);
+    $this->user->assignPermission('documents.edit');
+    $this->user->revokeTeam($team);
+    $this->user->revokeTeam($team);
+    expect($this->user->hasTeam($team))->toBeFalse()
+        ->and(AccessTeam::whereKey($this->team->id)->exists())->toBeTrue()
+        ->and($this->user->hasPermission('documents.edit'))->toBeTrue()
+        ->and($this->user->hasRole('editor', team: $this->otherTeam))->toBeTrue()
+        ->and($this->user->hasPermission('documents.edit', team: $team))->toBeFalse();
+    $this->user->assignTeam($team);
+    expect($this->user->hasRole('editor', team: $team))->toBeFalse()
+        ->and(DB::table('moztopia_access_permission_assignments')->where('team_id', $this->team->id)->exists())->toBeFalse();
+})->with(['name', 'object']);
+
+it('rejects unknown teams through the preferred revoke command', function (): void {
+    expect(fn () => $this->user->revokeTeam('missing'))->toThrow(DomainException::class, 'Unknown team');
+    expect(AccessTeam::count())->toBe(2);
+});
+
+it('exposes only the explicit assignment vocabulary and the Traits namespace', function (): void {
+    foreach (['grantRole', 'grantPermission', 'givePermission', 'allow'] as $method) {
+        expect(method_exists($this->user, $method))->toBeFalse()
+            ->and(method_exists($this->access, $method))->toBeFalse();
+    }
+    expect(trait_exists(Moztopia\Access\Traits\HasAccess::class))->toBeTrue()
+        ->and(trait_exists('Moztopia\\Access\\HasAccess'))->toBeFalse();
 });

@@ -26,8 +26,8 @@ it('executes a concurrency worker', function (): void {
     }
     try {
         match (getenv('ACCESS_WORKER_ACTION')) {
-            'grant' => $user->grantRole('editor', team: $team),
-            'permission' => $user->grantPermission('documents.edit', team: $team),
+            'grant' => $user->assignRole('editor', team: $team),
+            'permission' => $user->assignPermission('documents.edit', team: $team),
             'remove' => app(AccessService::class)->removeMember($team, $user),
             'add' => app(AccessService::class)->addMember($team, $user),
         };
@@ -132,7 +132,7 @@ afterEach(function (): void {
 it('serializes duplicate grants from independent processes', function (?string $scope, string $action): void {
     $team = $scope === null ? null : $this->team;
     DB::beginTransaction();
-    $method = $action === 'grant' ? 'grantRole' : 'grantPermission';
+    $method = $action === 'grant' ? 'assignRole' : 'assignPermission';
     $name = $action === 'grant' ? 'editor' : 'documents.edit';
     $this->user->{$method}($name, team: $team);
     $first = ($this->spawn)($action, $team);
@@ -160,7 +160,7 @@ it('rejects a blocked grant after membership removal commits', function (): void
 
 it('cascades a committed grant when a blocked membership removal proceeds', function (): void {
     DB::beginTransaction();
-    $this->user->grantRole('editor', team: $this->team);
+    $this->user->assignRole('editor', team: $this->team);
     $process = ($this->spawn)('remove', $this->team);
     usleep(100000);
     expect(proc_get_status($this->processes[$process][0])['running'])->toBeTrue();

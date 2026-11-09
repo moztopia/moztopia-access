@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moztopia\Access;
+namespace Moztopia\Access\Traits;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Moztopia\Access\Models\AccessTeam;
@@ -42,30 +42,12 @@ trait HasAccess
     }
 
     /**
-     * Alias assignPermission for familiar permission-management vocabulary.
+     * Revoke membership and its scoped grants without deleting the team.
      */
 
-    public function givePermission(string $name, AccessTeam|string|null $team = null): void
+    public function revokeTeam(AccessTeam|string $team): void
     {
-        $this->assignPermission($name, $team);
-    }
-
-    /**
-     * Alias assignPermission as a mutation, never an authorization check.
-     */
-
-    public function allow(string $name, AccessTeam|string|null $team = null): void
-    {
-        $this->assignPermission($name, $team);
-    }
-
-    /**
-     * Alias assignRole while preserving the original public contract.
-     */
-
-    public function grantRole(string $name, AccessTeam|string|null $team = null): void
-    {
-        $this->assignRole($name, $team);
+        app(AccessService::class)->removeMember($team, $this);
     }
 
     /**
@@ -84,15 +66,6 @@ trait HasAccess
     public function hasRole(string $name, AccessTeam|string|null $team = null): bool
     {
         return app(AccessService::class)->hasRole($this, $name, $team);
-    }
-
-    /**
-     * Alias assignPermission while preserving the original public contract.
-     */
-
-    public function grantPermission(string $name, AccessTeam|string|null $team = null): void
-    {
-        $this->assignPermission($name, $team);
     }
 
     /**

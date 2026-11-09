@@ -21,7 +21,7 @@ final class AccessTestTeamEditorController
     public function store(AccessTeam $team, AccessTestUser $target): Response
     {
         Gate::authorize('grantEditor', [$team, $target]);
-        $target->grantRole('editor', team: $team);
+        $target->assignRole('editor', team: $team);
 
         return response()->noContent();
     }
