@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.1 — Padlock (2026-11-09)
+
+- Add the tropical padlock package icon, matching the Moztopia Notifications visual family.
+- Update README and wiki branding; runtime behavior and schema are unchanged.
+
 ## 0.9.0 — Padlock (2026-11-09)
 
 - Introduce independent Laravel roles, permissions and teams with explicit global/team assignment semantics.

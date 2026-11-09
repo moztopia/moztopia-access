@@ -1,0 +1,9 @@
+# Moztopia Access branding
+
+`moztopia-access.png` is the transparent PNG badge used by the repository README and wiki. It was generated with the built-in image generation tool from the owner-approved [Notifications icon](https://github.com/moztopia/moztopia-notifications/blob/main/docs/assets/moztopia-notifications.png) as a style reference. It is covered by this repository's MIT license.
+
+## Generation prompt
+
+Create the matching sibling brand icon for Moztopia Access, using this Moztopia Notifications PNG as the exact style reference. Keep its colorful tropical sticker-badge aesthetic, thick clean black outlines, warm cream die-cut border, vivid pink sunset, green palm tree, small warm yellow/orange buildings, turquoise waves, developer laptop and coffee cup with code glyphs. Replace the central notification bell, envelope, ringing marks and pink number badge with a prominent closed golden-yellow PADLOCK with a rounded metal shackle and a bold black keyhole. The padlock should be the clear dominant foreground subject, cheerful and trustworthy. Match the reference's compact nearly square composition and professional polished illustration. Preserve the exact top banner word 'Moztopia'; the lower golden ribbon must read exactly 'Access' instead of 'Notifications'. No bell, no envelope, no notification count, no additional wording or watermark. Transparent outside the cream sticker silhouette. This is the final repository and wiki branding icon.
+
+The final PNG was visually reviewed for correct wording, a closed padlock, family resemblance and clean sticker edges. RGBA format and transparent corner pixels were verified. The wiki uses the main-branch raw image URL. Notifications does not use a custom GitHub Open Graph image, so no separate social-preview upload is modeled here.
